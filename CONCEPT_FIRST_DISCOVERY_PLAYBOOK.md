@@ -59,11 +59,11 @@ Recursion: the track is not one-shot. The domain evolves, so the map needs revis
 
 Mission: enumerate every entity in the domain and show its nesting or containment, purely abstractly. Separate entities (identity plus lifecycle) from artifacts (records attached to them). This is the foundation; the rest stands on it.
 
-Output spec: a list of entities each with a one-sentence definition (what it is, what gives it identity); a nesting tree (which entity contains which, top-level to intermediate to interaction); a separate list of artifact candidates parked for L3; the entity test applied to each item (lives across many interactions and changes state = entity, otherwise artifact).
+Output spec: a list of entities each with a one-sentence definition (what it is, what gives it identity); a nesting tree (which entity contains which, top-level to intermediate to interaction); a separate list of artifact candidates parked for L3; the entity test applied to each item (lives across many interactions and changes state = entity, otherwise artifact). Bounded context (conditional, not always): when the SAME entity name means materially different things in different parts of the business (classic example: a customer entity that means one thing to billing and another to support), name the bounded context per meaning and either split the entity or tag it with its context. Do this ONLY when the meaning genuinely differs; do not invent a context for every entity.
 
-Definition of Done: every item is explicitly classified entity or artifact (no "it depends"); a nesting tree exists with a single top-level entity (or an explicit statement that the domain has several co-equal roots); entity names are nouns from the user's language, not from the database schema.
+Definition of Done: every item is explicitly classified entity or artifact (no "it depends"); a nesting tree exists with a single top-level entity (or an explicit statement that the domain has several co-equal roots); entity names are nouns from the user's language, not from the database schema; if any entity name carries two materially different meanings across parts of the business, the contexts are named and the entity is split or context-tagged, otherwise this is explicitly marked not-applicable.
 
-Anti-patterns: mistaking an artifact for an entity (modeling "note" as an entity is almost always wrong); modeling by table names instead of the user's domain language; omitting an entity because it is not in the code (the entire point of this track is to find it).
+Anti-patterns: mistaking an artifact for an entity (modeling "note" as an entity is almost always wrong); modeling by table names instead of the user's domain language; omitting an entity because it is not in the code (the entire point of this track is to find it); one God entity that means different things to different teams (it should be split by bounded context); the over-correction, inventing contexts where the meaning is actually the same (context explosion, which is itself over-modeling the Skeptic should cut).
 
 Top levers: the entity-versus-artifact test (it dissolves most "merge these fields" requests); naming in the user's language (it reveals entities the schema hid); allowing entities that do not yet exist in code.
 
@@ -71,25 +71,27 @@ Top levers: the entity-versus-artifact test (it dissolves most "merge these fiel
 
 Mission: for each entity from L1, draw its lifecycle as a sequence (birth, states and transitions, closure). Name the arc length (long, medium, short) and point at the stages where nothing is currently modeled.
 
-Output spec: a textual state diagram per entity (state to transition to state, with a closure or an explicit "open-ended"); the arc length of each entity; empty stages (lifecycle stages with no representation in the product); the missing-middle test (does a medium-arc entity exist that binds interactions; if not, a red flag for L5).
+Output spec: a textual state diagram per entity (state to transition to state, with a closure or an explicit "open-ended"); the arc length of each entity; empty stages (lifecycle stages with no representation in the product); the missing-middle test (does a medium-arc entity exist that binds interactions; if not, a red flag for L5). For each transition, name its TRIGGER TYPE: user action / system event / time elapsed / external dependency. Flag transitions gated by something OUTSIDE the user's control (an external system or elapsed time), because that is where continuity stalls and a user gets stuck between states.
 
-Definition of Done: every entity has a lifecycle with an explicit beginning and an explicit closure (or "open-ended"); empty stages are named (where continuity has no carrier); the question "is there a missing medium arc" is answered explicitly.
+Definition of Done: every entity has a lifecycle with an explicit beginning and an explicit closure (or "open-ended"); empty stages are named (where continuity has no carrier); the question "is there a missing medium arc" is answered explicitly; every transition has a named trigger type; externally-gated transitions are flagged as continuity-risk points.
 
-Anti-patterns: a lifecycle modeled as a bag of fields instead of a sequence of states; omitting closure (an entity that never "ends", often the sign of a missing summary); assuming that because the user did not ask for a "before" stage, the "before" stage does not exist.
+Anti-patterns: a lifecycle modeled as a bag of fields instead of a sequence of states; omitting closure (an entity that never "ends", often the sign of a missing summary); assuming that because the user did not ask for a "before" stage, the "before" stage does not exist; modeling only states and not what drives the transitions (Event Storming: events drive state changes); pulling implementation detail (synchronous versus asynchronous, specific APIs) into this abstract lens, that is a Delivery/architect concern, not Track -1.
 
-Top levers: closure as a first-class stage (it surfaces the missing end-of-arc summary); the arc-length lens (it isolates the missing middle); empty-stage naming (it locates where continuity leaks).
+Top levers: closure as a first-class stage (it surfaces the missing end-of-arc summary); the arc-length lens (it isolates the missing middle); empty-stage naming (it locates where continuity leaks); the trigger-type lens (it locates the externally-gated transitions where users get stuck).
+
+Reliability boundary: the synchronous-versus-asynchronous classification of a trigger is an implementation property owned by the architect in Delivery, out of scope here. This lens names WHAT drives a transition (user, system, time, external), not HOW it is wired.
 
 ## L3 (Artifacts): artifacts and ownership
 
-Mission: take every artifact (notes, grades, summaries, logs, statuses, attachments) and ASSIGN each to one entity plus one stage of that entity's lifecycle. Surface orphans (no owner) and duplicates (several channels for the same thing).
+Mission: take every artifact (notes, grades, summaries, logs, statuses, attachments) and ASSIGN each to one entity plus one stage of that entity's lifecycle. Surface orphans (no owner) and duplicates (several channels for the same thing). Each artifact also carries a retention/privacy class: who may see it, how long it may be kept, and which entity owns its deletion.
 
-Output spec: an assignment table (artifact, owning entity, lifecycle stage, who or what reads it, status: live / dead / duplicate); orphans (artifacts with no clear entity, candidate missing entities for L5); duplicates (channels holding the same thing, to consolidate); dead writes (artifacts with no reader, which feed no process, candidate DROP).
+Output spec: an assignment table (artifact, owning entity, lifecycle stage, who or what reads it, privacy/retention, status: live / dead / duplicate / orphan); the privacy/retention value is one of None / Confidential / Personal-data (with a retention or deletion rule); orphans (artifacts with no clear entity, candidate missing entities for L5); duplicates (channels holding the same thing, to consolidate); dead writes (artifacts with no reader, which feed no process, candidate DROP).
 
-Definition of Done: every artifact has an owner plus stage, or is explicitly marked an orphan; duplicates are flagged in pairs; every artifact has a named reader, and absence of a reader yields a DROP candidate with a reason.
+Definition of Done: every artifact has an owner plus stage, or is explicitly marked an orphan; duplicates are flagged in pairs; every artifact has a named reader, and absence of a reader yields a DROP candidate with a reason; every artifact has a privacy/retention class; every personal-data artifact has a named deletion owner (its owning entity); an ORPHANED personal-data artifact is flagged as a compliance risk (no owner means it is retained indefinitely), not merely a tidiness issue.
 
-Anti-patterns: "this could belong to several entities" (force one primary owner, the rest are references); keeping a dead write because "it might be useful someday" (no reader = debt); failing to notice two artifacts are duplicates because they have different names.
+Anti-patterns: "this could belong to several entities" (force one primary owner, the rest are references); keeping a dead write because "it might be useful someday" (no reader = debt); failing to notice two artifacts are duplicates because they have different names; treating an orphaned personal-data artifact as only a cleanup item when it is a retention/privacy (for example GDPR) risk.
 
-Top levers: the reader map (it exposes dead writes objectively); one primary owner per artifact; the duplicate scan (it collapses parallel note systems).
+Top levers: the reader map (it exposes dead writes objectively); one primary owner per artifact; the duplicate scan (it collapses parallel note systems); the deletion-owner lens (the owning entity is what makes deletion/retention enforceable, an artifact with no owning entity has no one to enforce its deletion).
 
 ## L4 (Pain): pain per entity and per transition
 
@@ -107,9 +109,9 @@ Top levers: tying pain to empty stages (it grounds the gap register); framing as
 
 Mission: map the entities and their lifecycles to the product's CORE VALUE (its reason to exist) and produce the GAP REGISTER: missing entities (the missing medium arc above all), open transitions (sequences that should be automatic and are not), and artifacts to consolidate or DROP. This is the product of the whole track.
 
-Output spec: a value map (core value, which entities and transitions carry it, where the loop is open); a gap register (the main artifact), each gap with a type (MISSING ENTITY, OPEN SEQUENCE, CONSOLIDATION, DROP); a ranking of gaps by impact on core value; a downstream-resolved list (things that disappear on their own once the missing entity exists, so they are not built separately); each build-bound gap framed as a candidate PROBLEM ready to enter Discovery (as a pain, not a solution).
+Output spec: a value map (core value, which entities and transitions carry it, where the loop is open); a gap register (the main artifact), each gap with a type (MISSING ENTITY, OPEN SEQUENCE, CONSOLIDATION, DROP); a ranking of gaps by impact on core value; a downstream-resolved list (things that disappear on their own once the missing entity exists, so they are not built separately); each build-bound gap framed as a candidate PROBLEM ready to enter Discovery (as a pain, not a solution). For each build-bound gap, also state its ARCHITECTURAL CONSTRAINT: the invariant any solution must respect. Example for a MISSING ENTITY gap: "any solution must introduce the entity; a field-level patch on an existing entity does not resolve the structural gap and re-orphans the artifact." This is a CONSTRAINT/invariant, NOT a solution design (designing the solution is still out of scope, that is Delivery).
 
-Definition of Done: every gap has a type; gaps are ranked by impact on core value; downstream-resolved items are listed (anti over-build); every build-bound gap is framed as a candidate problem, not a solution.
+Definition of Done: every gap has a type; gaps are ranked by impact on core value; downstream-resolved items are listed (anti over-build); every build-bound gap is framed as a candidate problem, not a solution; every build-bound gap states its architectural constraint as an invariant (not a design).
 
 Anti-patterns: designing the solution ("let us build a table with these fields") instead of stopping at "an entity is missing"; pushing a gap straight to build, skipping Discovery's demand validation; omitting downstream-resolved and building separately what the missing entity handles for free.
 
@@ -157,16 +159,16 @@ ENTITIES (entity | definition | arc length | contains):
 LIFECYCLES (entity: state -> ... -> closure | empty stages):
 - <entity>: <birth> -> <state> -> <closure>  | EMPTY: <stage with no carrier>
 
-ARTIFACTS (artifact | owner | stage | reader | status):
-- <artifact> | <entity> | <stage> | <who reads it> | live/dead/duplicate/orphan
+ARTIFACTS (artifact | owner | stage | reader | privacy/retention | status):
+- <artifact> | <entity> | <stage> | <who reads it> | <None / Confidential / Personal-data + rule> | live/dead/duplicate/orphan
 
 ## Gap register (ranked by core value)
-| # | Gap | Type | Impact on core value | Skeptic verdict | Candidate for Discovery? |
-|---|-----|------|----------------------|-----------------|--------------------------|
-| 1 | <missing entity X> | MISSING ENTITY | <how it closes the loop> | REAL | YES, problem: "<user pain>" |
-| 2 | <auto transition Y> | OPEN SEQUENCE | <...> | REAL | YES |
-| 3 | <duplicate A/B>     | CONSOLIDATION | <...> | REAL | no (housekeeping) |
-| 4 | <dead write Z>      | DROP | <...> | REAL | no (remove) |
+| # | Gap | Type | Impact on core value | Architectural constraint | Skeptic verdict | Candidate for Discovery? |
+|---|-----|------|----------------------|--------------------------|-----------------|--------------------------|
+| 1 | <missing entity X> | MISSING ENTITY | <how it closes the loop> | <invariant Delivery must honor, e.g. must introduce the entity, not a field-level patch> | REAL | YES, problem: "<user pain>" |
+| 2 | <auto transition Y> | OPEN SEQUENCE | <...> | <invariant> | REAL | YES |
+| 3 | <duplicate A/B>     | CONSOLIDATION | <...> | -            | REAL | no (housekeeping) |
+| 4 | <dead write Z>      | DROP | <...> | -            | REAL | no (remove) |
 
 DOWNSTREAM-RESOLVED (disappears once the missing entity exists):
 - <thing NOT built separately because the missing entity handles it>
@@ -175,7 +177,7 @@ MODEL CORRECTIONS FROM CODE (L6):
 - <what the code revealed or removed>
 ```
 
-Each "Candidate = YES" row enters the Discovery Sequence as a loose problem (the signals or opportunity inbox), where it gets an outcome, a demand signal, a RAT, and a Go/No-Go. Consolidations and DROPs go straight to the housekeeping backlog (they need no demand validation, they pay down debt).
+Each "Candidate = YES" row enters the Discovery Sequence as a loose problem (the signals or opportunity inbox), where it gets an outcome, a demand signal, a RAT, and a Go/No-Go. Consolidations and DROPs go straight to the housekeeping backlog (they need no demand validation, they pay down debt). The architectural constraint travels WITH the candidate problem into Discovery's Brief and must be honored by Delivery, so that a validated problem is not later solved with a field-level patch that recreates the gap (the intent here, not an edit to DISCOVERY_PLAYBOOK.md or DELIVERY_PLAYBOOK.md).
 
 ---
 
