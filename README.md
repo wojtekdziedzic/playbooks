@@ -53,4 +53,4 @@ Suggested reading order for a first-time user: README -> STATUS_TAXONOMY.md (to 
 
 ## Writing convention
 
-English, plain ASCII only, straight quotes only (" and '). No em-dashes or en-dashes anywhere: use commas, colons, parentheses, or periods instead. For a label and its description, use a colon or parentheses (for example "PS (Product Strategist)" or "PS: Product Strategist"), never a dash or a dash substitute.
+English, plain ASCII only, straight quotes only (" and '). No em-dashes or en-dashes anywhere: use commas, colons, parentheses, or periods instead.
