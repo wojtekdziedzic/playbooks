@@ -33,6 +33,7 @@ Two support playbooks cut across the tracks: the Metrics Playbook (how to choose
 - [METRICS_PLAYBOOK.md](METRICS_PLAYBOOK.md): how to choose good metrics. The metric stack (north star -> levers -> feature success metric -> counter-metric), criteria for a north star, the quality bar for baseline -> target -> window, counter-metrics, leading vs lagging and proxies with expiry, the five-question vanity test, pre-registration of thresholds, and ownership. Feeds PS and DATA in Discovery, BA and post-release verification in Delivery.
 - [DEPENDENCIES_PLAYBOOK.md](DEPENDENCIES_PLAYBOOK.md): cross-team coordination. The Dependency Register (one row per dependency with owners, need-by, and fallback), dependency types (blocking / soft / informational), written contracts before integration, backward-computed need-by dates, the requested -> committed -> delivered -> verified handshake, the fallback rule, and the escalation ladder. Gives the BLOCKED status its operating procedure and feeds the Tech Lead's integration contracts.
 - [EXAMPLE_DISCOVERY.md](EXAMPLE_DISCOVERY.md): an anonymized, worked Discovery example showing the full role-by-role flow through the gates to a Brief. Use it as a reference for what good Discovery output looks like.
+- [PROJECT_PROFILE_TEMPLATE.md](PROJECT_PROFILE_TEMPLATE.md): the fill-in template for your project's `PROJECT_PROFILE.md` sidecar. One section per consumer group (outcome and levers, domain, personas and signals, metrics rules, hard rules, footgun register, delivery conventions, security and compliance, release pre-flight, status operations, cross-team coordination), each field annotated with which role or gate consumes it and which playbook defaults it may override.
 - [.gitattributes](.gitattributes): line-ending normalization so the template stays clean across machines.
 
 ## Shared anatomy of a role entry
@@ -46,7 +47,7 @@ Discovery ends BEFORE solution design begins. Discovery says "it is worth solvin
 ## How to use in your own project
 
 1. Clone the repo (or copy the three playbooks, the taxonomy, and the example).
-2. Create your own `PROJECT_PROFILE.md` with the specifics: outcome / north star, hard rules, the footgun register for your stack, the release pre-flight checklist, your design system, and your personas. `PROJECT_PROFILE.md` is the canonical sidecar for everything project-specific.
+2. Copy [PROJECT_PROFILE_TEMPLATE.md](PROJECT_PROFILE_TEMPLATE.md) into your project as `PROJECT_PROFILE.md` and fill in the placeholders: outcome / north star, hard rules, the footgun register for your stack, the release pre-flight checklist, your design system, and your personas. `PROJECT_PROFILE.md` is the canonical sidecar for everything project-specific.
 3. Run your analyses and builds, keeping the RESULTS (briefs, plans, backlog refactors) in YOUR project, not here. This repo stays a clean source.
 
 Suggested reading order for a first-time user: README -> STATUS_TAXONOMY.md (to triage where an idea is) -> CONCEPT_FIRST_DISCOVERY_PLAYBOOK.md (when you need to model the domain before any specific idea) -> DISCOVERY_PLAYBOOK.md or DELIVERY_PLAYBOOK.md depending on the idea's route. Read METRICS_PLAYBOOK.md when you set up the metric stack (or the first time any role has to pick a number), and DEPENDENCIES_PLAYBOOK.md the first time a build crosses a team boundary.
