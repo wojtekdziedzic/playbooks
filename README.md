@@ -50,7 +50,3 @@ Discovery ends BEFORE solution design begins. Discovery says "it is worth solvin
 3. Run your analyses and builds, keeping the RESULTS (briefs, plans, backlog refactors) in YOUR project, not here. This repo stays a clean source.
 
 Suggested reading order for a first-time user: README -> STATUS_TAXONOMY.md (to triage where an idea is) -> CONCEPT_FIRST_DISCOVERY_PLAYBOOK.md (when you need to model the domain before any specific idea) -> DISCOVERY_PLAYBOOK.md or DELIVERY_PLAYBOOK.md depending on the idea's route. Read METRICS_PLAYBOOK.md when you set up the metric stack (or the first time any role has to pick a number), and DEPENDENCIES_PLAYBOOK.md the first time a build crosses a team boundary.
-
-## Writing convention
-
-English, plain ASCII only, straight quotes only (" and '). No em-dashes or en-dashes anywhere: use commas, colons, parentheses, or periods instead. For a label and its description, use a colon or parentheses (for example "PS (Product Strategist)" or "PS: Product Strategist"), never a dash or a dash substitute.
