@@ -33,9 +33,11 @@ Discovery verdicts (the vocabulary used above and in the state machine): **Go** 
 
 | Status | Meaning | REQUIRES (otherwise the status is illegal) |
 |---|---|---|
-| `PARKED` | deliberately deferred | a revival trigger plus a review date. Without a trigger it is not "parked", it is "lost" |
+| `PARKED` | deliberately deferred | a revival trigger plus a review date plus a max park time (see the cap rule below). Without a trigger it is not "parked", it is "lost" |
 | `BLOCKED` | external blocker | who or what unblocks it (illustrative examples: legal sign-off, design input, third-party API credentials, a signed contract, a business decision) |
 | `KILLED` | rejected or superseded | a reason. Does not return without a NEW signal |
+
+**Max park time (the PARKED cap):** a park is not open-ended. Every PARKED item carries, besides the trigger and the review date, a maximum total park time: default 90 days, override per project in `PROJECT_PROFILE.md`. At each review date there are exactly three legal moves: (a) trigger met, the item returns to the flow (`DISCOVERY` or `READY`); (b) trigger not met but still plausible, the park is renewed with a new review date (the cap keeps counting total time parked); (c) neither, the item moves to `KILLED`. When total park time hits the cap, renewal is no longer the default: either a decision-maker explicitly re-justifies the park with a NEW named reason (which restarts the clock once), or the item is `KILLED`. A park with no cap regrows exactly the bottomless "PARKED" bag this taxonomy exists to prevent.
 
 ---
 
@@ -48,15 +50,33 @@ Discovery verdicts (the vocabulary used above and in the state machine): **Go** 
 | `D` | Discovery only (no build) | pure research or strategy |
 | `--` | not an idea | reference / hard rule / strategy / ops |
 
-**Skip-Discovery rule (Route E):** skip Discovery when demand is certain by definition:
-- legal / compliance (privacy law such as GDPR, terms of service, accessibility, security, data residency),
-- table-stakes / parity required to compete at all,
-- tech-debt / infra / refactor (no question about user demand),
-- a trivial UX fix,
-- finishing something already partly live in production (PARTIAL),
-- a problem reported and confirmed by the PO from observing a real user.
+**Route decision tree:** run top to bottom on every triaged item; the FIRST question answered YES assigns the route and the walk stops. No judgment calls outside the tree: if none of questions 1 to 4 fires, the answer is question 5.
 
-**Require Discovery (Route D->E):** a new user-facing feature with uncertain demand, a monetization bet, or a large idea competing for a limited team slot. Discovery kills it with a cheap demand test (for example a fake-door, a smoke test, or a landing-page signup) in hours, before Delivery spends days or weeks.
+```
+Q1. Is it not an idea at all (reference, hard rule, strategy note, ops)?
+      YES -> Route --
+Q2. Is it pure research or strategy, with no build committed?
+      YES -> Route D
+Q3. Is demand certain BY DEFINITION? That means at least one of:
+      a. legal / compliance obligation (privacy law such as GDPR, terms of
+         service, accessibility, security, data residency)
+      b. table-stakes parity: without it the product cannot compete at all
+      c. tech-debt / infra / refactor (no question about user demand)
+      d. finishing something already partly live in production (PARTIAL)
+      e. a problem reported AND confirmed by the PO from observing a real user
+      YES -> Route E (skip Discovery; record which letter applied)
+Q4. Is it a trivial fix under the fast path threshold below?
+      YES -> Route E (fast path)
+Q5. Otherwise: a new user-facing feature with uncertain demand, a
+    monetization bet, or a large idea competing for a limited team slot.
+      -> Route D->E (Discovery required)
+```
+
+**Fast path threshold (Q4):** "trivial" is a number, not a feeling: estimated effort at most 4 hours end to end (build plus test plus release), AND no new persistent state, AND no new external dependency. All three must hold. If the estimate exceeds 4 hours, or the fix adds a new entity or a new integration, it is not trivial: go back to the tree and land on Q5. The 4 hour default lives here; override it per project in `PROJECT_PROFILE.md`, but keep it in hours, not days: a fast path measured in days is just an unreviewed build.
+
+**Require Discovery (Route D->E, Q5):** Discovery kills a weak idea with a cheap demand test (for example a fake-door, a smoke test, or a landing-page signup) in hours, before Delivery spends days or weeks.
+
+**Audit line:** every Route E item records which branch admitted it (Q3 letter a to e, or Q4 with the estimate). A Route E with no recorded reason is illegal, exactly like a PARKED with no trigger.
 
 ---
 
@@ -122,5 +142,7 @@ This file is generic on purpose. To adapt it, keep all project specifics in a se
 - **Environments**: map `STAGING` and `SHIPPED` to your real environment names if they differ (pre-prod, canary, production, and so on).
 - **Tracker mapping**: map each status onto your tracker (a label, a column, or a field) and record where the status lives (see section 7).
 - **Cheap demand test**: pick the cheap test that fits your context (fake-door, smoke test, landing-page signup, concierge MVP) and name it in your profile.
+- **PARKED cap**: override the default 90 day max park time if your planning cadence needs a different one, and record the override in `PROJECT_PROFILE.md`.
+- **Fast path threshold**: override the default 4 hour trivial-fix ceiling in `PROJECT_PROFILE.md` if needed, keeping it in hours (see the rule in section 4).
 
 For the gates that drive the DISCOVERY -> RAT -> READY transitions, see `DISCOVERY_PLAYBOOK.md`. For the build sequence behind `DELIVERY`, see `DELIVERY_PLAYBOOK.md`.
