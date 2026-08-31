@@ -4,6 +4,12 @@ A project-agnostic template for taking any idea from "what is the shape of the d
 
 This repo is the SOURCE (a template), not the result of any one analysis. You keep the specifics of a concrete project (outcome, hard rules, stack, personas, deadline) in a separate sidecar file, `PROJECT_PROFILE.md`, and leave these playbooks clean and shared across projects.
 
+## Where this sits relative to spec-driven tooling
+
+Spec-driven development tooling (spec-kit, Kiro, Tessl and similar) starts from a specification and generates code: it answers "given this spec, build it". These playbooks sit one layer above and answer the question that tooling assumes away: "is there a spec worth writing at all, and what exactly belongs in it". The output of Track -1 and Track 0 is precisely the input a spec-driven tool is missing: a domain map, a justified gap, a Go with a stated reason, and a Brief written to a fixed shape.
+
+The two compose. Use the playbooks to decide and to specify, use a spec-driven tool to implement. Nothing here assumes an AI agent writes the code, but everything here is written so an agent can execute it: a fixed section vocabulary per role, explicit gates, and a Definition of Done that can be checked rather than felt.
+
 ## Three tracks plus a state layer
 
 ```
@@ -44,10 +50,28 @@ Every role in the Discovery and Delivery playbooks uses the same canonical secti
 
 Discovery ends BEFORE solution design begins. Discovery says "it is worth solving problem P for persona [persona], because [reason]". Delivery says "here is how we will solve it". Nothing enters Delivery without a Go from Discovery, or an explicit skip under the Route E rule in the taxonomy.
 
+## Cost scaled to risk
+
+The full sequence is 7 lenses plus 8 roles plus 7 roles. Running all of it on a two hour fix would be malpractice. These playbooks are a menu with a selection rule, not a mandatory ceremony:
+
+- Small and reversible (a copy change, a visible bug, anything at or under 4 hours): the fast path in the Route E decision tree. Skip Discovery entirely, go straight to Delivery, keep only the Definition of Done and the release pre-flight.
+- Medium (a new screen, a new field with data behind it): Route D->E with a short Discovery, typically PDL plus one evidence role plus SKEPTIC. Three roles, not eight.
+- Large or irreversible (pricing, authentication, money, data migrations, a new entity in the domain): the full sequence, including Track -1 when the change implies a new entity rather than a new screen.
+
+The smallest useful adoption is the Status Taxonomy on its own: add the route dimension to an existing backlog and the "PARKED" pile stops being a graveyard. Add Discovery next, add Concept-First last.
+
+A one person team runs the roles in sequence, one hat at a time. The value is not headcount: it is that each hat has a different failure mode, and that SKEPTIC is a separate pass with its own output rather than a mood you happen to be in.
+
 ## How to use in your own project
 
 1. Clone the repo (or copy the three playbooks, the taxonomy, and the example).
 2. Copy [PROJECT_PROFILE_TEMPLATE.md](PROJECT_PROFILE_TEMPLATE.md) into your project as `PROJECT_PROFILE.md` and fill in the placeholders: outcome / north star, hard rules, the footgun register for your stack, the release pre-flight checklist, your design system, and your personas. `PROJECT_PROFILE.md` is the canonical sidecar for everything project-specific.
 3. Run your analyses and builds, keeping the RESULTS (briefs, plans, backlog refactors) in YOUR project, not here. This repo stays a clean source.
 
+## Reading order
+
 Suggested reading order for a first-time user: README -> STATUS_TAXONOMY.md (to triage where an idea is) -> CONCEPT_FIRST_DISCOVERY_PLAYBOOK.md (when you need to model the domain before any specific idea) -> DISCOVERY_PLAYBOOK.md or DELIVERY_PLAYBOOK.md depending on the idea's route. Read METRICS_PLAYBOOK.md when you set up the metric stack (or the first time any role has to pick a number), and DEPENDENCIES_PLAYBOOK.md the first time a build crosses a team boundary.
+
+## Provenance
+
+This is not a thought experiment. The playbooks were extracted from the working process of a production SaaS product and are still the process that product runs on: every non-trivial feature passes through the tracks, and several candidate features were killed at a gate before any code was written, which is the point of having gates. `EXAMPLE_DISCOVERY.md` is an anonymized real run, not an illustration composed for this README.
