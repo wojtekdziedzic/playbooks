@@ -42,6 +42,10 @@ Two support playbooks cut across the tracks: the Metrics Playbook (how to choose
 - [PROJECT_PROFILE_TEMPLATE.md](PROJECT_PROFILE_TEMPLATE.md): the fill-in template for your project's `PROJECT_PROFILE.md` sidecar. One section per consumer group (outcome and levers, domain, personas and signals, metrics rules, hard rules, footgun register, delivery conventions, security and compliance, release pre-flight, status operations, cross-team coordination), each field annotated with which role or gate consumes it and which playbook defaults it may override.
 - [.gitattributes](.gitattributes): line-ending normalization so the template stays clean across machines.
 
+## Languages
+
+The files in the repository root are the canon and are written in English. `pl/` holds a Polish translation of the five track files (Concept-First Discovery, Discovery, Delivery, Status Taxonomy, and the worked example); `METRICS_PLAYBOOK.md`, `DEPENDENCIES_PLAYBOOK.md` and `PROJECT_PROFILE_TEMPLATE.md` are English only. Every translated file carries a sync date in its header. Edit the root first: if a root file changed after that date, the translation is stale and the root wins. A translation that silently claims parity is worse than one that states when it was last synced.
+
 ## Shared anatomy of a role entry
 
 Every role in the Discovery and Delivery playbooks uses the same canonical section vocabulary, so once you know one role you can read any of them: Mission, Output spec, Definition of Done, Anti-patterns, Top levers, Gates, Cross-cutting rules, and Adaptation to your project. Reading them in that order tells you what the role is for, what it must produce, when it is done, how it fails, and where the leverage is.
