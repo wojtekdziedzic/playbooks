@@ -43,6 +43,17 @@ Discovery verdicts (the vocabulary used above and in the state machine): **Go** 
 
 ## 4. Route: which sequence (answering "both, or just one?")
 
+**Intake (before the tree).** The route is itself a decision, so it needs input. A one-sentence request is not input. Before running the tree, fill six slots from what the requester already wrote: **Ask** (the deliverable in one sentence, plus its artifact type: plan / architecture / code / decision), **Job** (whose problem, when it occurs, what breaks without it), **Decision-maker** (who accepts the artifact, who can veto it), **Hard constraints** (stack, deadline, budget, legal or regulatory regime, organizational rules), **What already exists** (product, code, process, systems to integrate with), **Success signal** (how the requester will know it worked).
+
+Intake rules:
+
+- **Ask is the only blocking slot.** If the deliverable is unclear, ask and stop; do not run the tree. The other five never block.
+- **Depth rule:** spend a question on a slot only when two plausible answers would change the artifact materially (route, scope, architecture). Name the two answers; if the artifact comes out identical under both, do not ask.
+- **Recon before asking:** a slot answerable by reading the code, repo or docs is resolved by recon (Gate 0 in `DELIVERY_PLAYBOOK.md`), not by a question. This is what separates a codebase you can read from a client system you cannot.
+- **One batch, at most five questions, then proceed.** Do not wait for the answers and do not ask in rounds. An intake that blocks costs more than the misroute it prevents.
+- **Unfilled slots become numbered assumptions** at the top of the artifact: `A-n: <slot> = <default>; if false: <what changes>`. They are carried in the default-on-OK block (cross-cutting rule 1 in `DELIVERY_PLAYBOOK.md`). Defaults: Job = the ask taken literally with the requester as persona; Decision-maker = the requester; Hard constraints = the `PROJECT_PROFILE.md` rules and nothing beyond; What exists = whatever recon found; Success signal = "accepted by the decision-maker" (explicitly weak, flag it for replacement).
+- **Intake scales to risk** like the tracks do: a trivial fast-path item (Q4 below) with inferable slots asks nothing at all.
+
 | Route | Path | When |
 |---|---|---|
 | `D->E` | Discovery, then Delivery | unvalidated demand or monetization bet; competes for a slot |
@@ -76,7 +87,7 @@ Q5. Otherwise: a new user-facing feature with uncertain demand, a
 
 **Require Discovery (Route D->E, Q5):** Discovery kills a weak idea with a cheap demand test (for example a fake-door, a smoke test, or a landing-page signup) in hours, before Delivery spends days or weeks.
 
-**Audit line:** every Route E item records which branch admitted it (Q3 letter a to e, or Q4 with the estimate). A Route E with no recorded reason is illegal, exactly like a PARKED with no trigger.
+**Audit line:** every Route E item records which branch admitted it (Q3 letter a to e, or Q4 with the estimate), and every routed item records which intake slots were assumptions rather than facts. A Route E with no recorded reason is illegal, exactly like a PARKED with no trigger.
 
 ---
 
