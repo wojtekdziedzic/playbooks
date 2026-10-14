@@ -133,6 +133,8 @@ Anti-patterns: a test that cannot disprove the idea; validating an easy assumpti
 
 Top levers: the fake-door (cheapest demand validator); a decision rule before the test; concierge before automation.
 
+UI experiments: when the riskiest assumption is about an interface change (a layout, a form, a pricing presentation), use the hypothesis shape, the power and runtime rules, and the low-traffic rule in UI_PLAYBOOK.md section 6; a Persuasion lever also passes SKEPTIC's ethics gate (UI_PLAYBOOK.md section 5) before it runs.
+
 ## SKEPTIC (Red-team): adversary
 
 Mission: try to KILL the idea and undermine every section above. Defaults to "No-Go" and forces the rest to disprove it. Protects against falling in love with your own idea.
