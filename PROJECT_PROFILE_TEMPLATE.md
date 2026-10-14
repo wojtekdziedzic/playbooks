@@ -74,6 +74,15 @@ Runtime traps in YOUR stack: things the compiler and types do not catch but that
 - Copy language and tone: `<language(s); plain language, no technical IDs in user-facing copy>`
   - Consumed by: Tech Lead (fixes the estimation unit), Frontend (design system, devices, accessibility), QA (device-coverage tests).
 
+## 7a. UI decisions (UI Playbook inputs)
+
+- Pattern Register location and owner: `<file or section, plus the owning role>`
+- Forbidden patterns (never used, whatever a test says): `<for example: fake countdown timers, fake scarcity, pre-ticked paid add-ons, confirmshaming>`
+- Undo-vs-confirm rule: `<which actions are undoable, which require confirmation>`
+- Key screens and typical weekly traffic: `<screen: visitors per week>` (drives the low-traffic rule)
+- Experiment tooling and limits: tool `<name>`, default MDE `<percent>`, maximum test duration `<n weeks>`, who may start a test `<role>`
+  - Consumed by: UI_PLAYBOOK.md sections 3, 5, and 6; EXP and SKEPTIC in Discovery; BA, Frontend, and QA in Delivery.
+
 ## 8. Security and compliance
 
 - Data classification levels: `<for example: public / internal / confidential / personal-data, with the required protection per level>`

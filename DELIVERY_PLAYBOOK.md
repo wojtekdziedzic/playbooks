@@ -124,10 +124,10 @@ Skeleton: `Estimation unit | Step list (id, action, estimate, depends-on) | Crit
 - Device coverage: every flow completable on each target form factor (the specific target, for example the smallest supported screen, is injected from PROJECT_PROFILE.md).
 - Edge states: loading, empty, error, offline.
 - Consistency with the project's UI primitives and design system.
-- Chosen UX patterns cited with a rationale (cite the pattern you chose and why; do not prescribe a specific pattern library here, that choice lives in PROJECT_PROFILE.md).
+- Chosen UX patterns cited with a rationale (cite the pattern you chose and why; do not prescribe a specific pattern library here, that choice lives in PROJECT_PROFILE.md). Every conversion lever cites its Pattern Register ID and evidence level per UI_PLAYBOOK.md.
 - Accessibility to the project's threshold.
 
-**Definition of Done:** flow completable on the target devices; edge states handled; consistent with the design system; user-facing copy in plain language (no jargon, no technical IDs).
+**Definition of Done:** flow completable on the target devices; edge states handled; consistent with the design system; user-facing copy in plain language (no jargon, no technical IDs); the UI hygiene checklist in UI_PLAYBOOK.md section 4 answered for every screen.
 
 **Anti-patterns:** a desktop-only wall (a flow that cannot be completed on a smaller target); missing empty or error states; native primitives instead of the design system; jargon in copy.
 
